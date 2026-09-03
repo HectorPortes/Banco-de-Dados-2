@@ -1,0 +1,190 @@
+-- Tabela de cursos (tabela "direita" nos JOINs)
+CREATE TABLE cursos (
+id SERIAL PRIMARY KEY,
+nome VARCHAR(50) NOT NULL,
+carga_horaria INTEGER
+);
+-- Tabela de alunos (tabela "esquerda" nos JOINs)
+CREATE TABLE alunos (
+id SERIAL PRIMARY KEY,
+nome VARCHAR(100) NOT NULL,
+idade INTEGER,
+curso_id INTEGER REFERENCES cursos(id),
+telefone VARCHAR(20),
+salario NUMERIC(10,2) -- Para demonstrar SUM e AVG
+);
+-- Tabela de funcionários (para demonstrar funções de agregação)
+CREATE TABLE funcionarios (
+id SERIAL PRIMARY KEY,
+nome VARCHAR(100) NOT NULL,
+departamento VARCHAR(50),
+salario NUMERIC(10,2)
+);
+-- Tabela de professores (para UNION/INTERSECT/EXCEPT)
+CREATE TABLE professores (
+id SERIAL PRIMARY KEY,
+nome VARCHAR(100) NOT NULL,
+disciplina VARCHAR(50)
+);
+
+-- Inserir cursos
+INSERT INTO cursos (nome, carga_horaria) VALUES
+('Informática', 400),
+('Engenharia', 500),
+('Matemática', 350),
+('Física', 420),
+('Administração', 380),
+('Design', 300);
+-- Inserir alunos (com alguns telefones NULL)
+INSERT INTO alunos (nome, idade, curso_id, telefone, salario) VALUES
+('Ana Silva', 22, 1, '(11) 99999-1111', 2500.00),
+('Bruno Santos', 19, 1, NULL, 1800.00),
+('Carla Oliveira', 25, 2, '(11) 99999-2222', 3200.00),
+('Diego Costa', 20, 2, NULL, 1900.00),
+('Elena Ferreira', 23, 1, '(11) 99999-3333', 2700.00),
+('Fábio Lima', 21, 3, '(11) 99999-4444', 2100.00),
+('Gabriela Rocha', 24, 4, NULL, 2800.00),
+('Henrique Alves', 18, 5, '(11) 99999-5555', 1600.00),
+('Isabela Nunes', 22, 5, '(11) 99999-6666', 2200.00),
+('João Pedro', 20, 1, NULL, 1700.00),
+('Karina Mendes', 26, 2, '(11) 99999-7777', 3400.00),
+('Leonardo Dias', 19, 3, '(11) 99999-8888', 2000.00),
+('Mariana Castro', 23, 6, NULL, 2400.00),
+('Nicolas Andrade', 21, 4, '(11) 99999-9999', 2600.00),
+('Olivia Freitas', 24, 6, '(11) 99999-0000', 2300.00);
+-- Inserir funcionários
+INSERT INTO funcionarios (nome, departamento, salario) VALUES
+('Carlos Souza', 'TI', 4500.00),
+('Mariana Lima', 'RH', 3800.00),
+('Rafael Oliveira', 'TI', 5200.00),
+('Juliana Costa', 'Financeiro', 4800.00),
+('André Santos', 'TI', 4000.00),
+('Patrícia Silva', 'RH', 3500.00),
+('Gustavo Pereira', 'Marketing', 4200.00),
+('Fernanda Alves', 'Financeiro', 5000.00);
+-- Inserir professores (para UNION/INTERSECT/EXCEPT)
+INSERT INTO professores (nome, disciplina) VALUES
+('Ana Silva', 'Banco de Dados'), -- Nome em comum com alunos
+('Roberto Lima', 'Estrutura de Dados'),
+('Carla Oliveira', 'Programação'), -- Nome em comum com alunos
+('Paulo Mendes', 'Matemática'),
+('Mariana Castro', 'Física'); -- Nome em comum com alunos
+
+-- 1 - todos os alunos que não tem telefone
+select * from alunos
+	Where telefone is null
+
+-- 2 - todos os alunos que tem telefone
+select * from alunos
+	where telefone is not null
+
+-- 3 - alunos que tenham mais de 21 anos e salario maior que 2500
+select * from alunos
+	where idade > 21 and salario > 2500
+
+-- 4 - funcionário se departamento for TI e mostre o salário e nome
+select salario, nome from funcionarios
+	where departamento = 'TI'
+
+-- 5 - professores que dão aula na disciplina de estrutura de dados ou programação
+select * from professores
+	where disciplina = 'Estrutura de Dados' or disciplina = 'Programação'
+
+-- 6 - cursos com carga horária maior que 400
+select * from cursos
+	where carga_horaria > 400
+
+-- 7 - todos os alunos com o nome do curso que estão fazendo
+select a.nome as aluno, c.nome as curso
+from alunos a
+	inner join cursos c on a.curso_id = c.id
+
+-- 8 - todos os cursos com a quantidade de alunos matriculados (incluindo cursos vazios)
+select c.id as curso_id, c.nome as curso, count(a.nome) as qtde_alunos
+	from alunos a
+	left join cursos c on a.curso_id = c.id
+	group by curso, c.id
+	order by c.id
+
+-- 9 - alunos que estão matriculados em cursos com carga horária acima de 350 horas
+select a.nome as aluno, c.nome as curso, c.carga_horaria
+	from alunos a
+	inner join cursos c on a.curso_id = c.id
+	where c.carga_horaria > 350
+
+-- 10 - alunos com seus cursos, mas apenas dos cursos de Informática e Engenharia
+select a.nome as aluno, c.nome as curso
+	from alunos a
+	inner join cursos c on a.curso_id = c.id
+	where c.nome = 'Informática' or c.nome = 'Engenharia'
+
+-- 11 - Conte quantos alunos tem em cada curso
+select c.id as curso_id, c.nome as curso, count(a.nome) as qtde_alunos
+	from alunos a
+	inner join cursos c on a.curso_id = c.id
+	group by curso, c.id
+	order by c.id
+
+-- 12 - Calcule a idade média dos alunos por curso
+select c.id as curso_id, c.nome as curso, avg(a.idade) as idade_media
+	from alunos a
+	inner join cursos c on a.curso_id = c.id
+	group by curso, c.id
+	order by c.id
+
+-- 13 - Mostre o salário total e a média salarial dos alunos agrupados por curso
+select c.id as curso_id, c.nome as curso, sum(a.salario) as soma_salarial_total, avg(a.salario) as media_salarial
+	from alunos a
+	inner join cursos c on a.curso_id = c.id
+	group by curso, c.id
+	order by c.id
+
+-- 14 - Conte quantos funcionários tem em cada departamento
+select f.departamento, count(f.departamento)
+	from funcionarios f
+	group by f.departamento
+
+-- 15 - Quais cursos têm mais de 2 alunos matriculados?
+select c.nome as curso, count(a.nome) as qtde_alunos
+	from alunos a
+	inner join cursos c on a.curso_id = c.id
+	group by curso
+	having count(a.nome) > 2
+
+-- 16 - Mostre os departamentos com salário médio acima de 4000
+select f.departamento, f.salario
+	from funcionarios f
+	where f.salario > 4000
+
+-- 17 - Encontre alunos que têm telefone E estão no curso de Informática
+select a.nome as aluno, a.telefone, c.nome as curso
+	from alunos a
+	inner join cursos c on a.curso_id = c.id
+	where a.telefone is not null and c.nome = 'Informática'
+
+-- 18 - Mostre alunos do curso de Matemática OU Física
+select a.nome as aluno, c.nome as curso
+	from alunos a
+	inner join cursos c on a.curso_id = c.id
+	where c.nome = 'Matemática' or c.nome = 'Física'
+
+-- 19 - Liste alunos que NÃO estão no curso de Administração
+select a.nome as aluno, c.nome as curso
+	from alunos a
+	inner join cursos c on a.curso_id = c.id
+	where c.nome <> 'Administração'
+
+-- 20 - Mostre todos os nomes que aparecem em alunos OU professores (sem duplicados)
+select nome from alunos
+union
+select nome from professores
+
+-- 21 - Quais nomes aparecem tanto em alunos quanto em professores?
+select nome from alunos
+intersect
+select nome from professores
+
+-- 22 - Quais nomes estão em alunos mas NÃO em professores?
+select nome from alunos
+except
+select nome from professores
