@@ -1,0 +1,63 @@
+CREATE TABLE clientes (
+	id INT PRIMARY KEY,
+	nome VARCHAR(50),
+	cpf INT,
+	cidade VARCHAR(150)
+);
+
+CREATE TABLE veiculos (
+	id INT PRIMARY KEY,
+	modelo VARCHAR(150),
+	placa CHAR(7),
+	diaria REAL
+);
+
+CREATE TABLE locacoes (
+	id INT PRIMARY KEY,
+	cli_id INT,
+	vei_id INT,
+	data_ret DATE,
+	data_dev DATE,
+	valor_total REAL,
+	FOREIGN KEY (cli_id) REFERENCES clientes(id),
+	FOREIGN KEY (vei_id) REFERENCES veiculos(id)
+);
+
+INSERT INTO clientes VALUES 
+	(1, 'Natalia', 1, 'Anastacio'),
+	(2, 'Pedro', 2, 'Anastacio'),
+	(3, 'Rene', 3, 'Aquidauana'),
+	(4, 'Hector', 4, 'Aquidauana'),
+	(5, 'Marcos', 5, 'Corumba'),
+	(6, 'Marcelo', 6, 'Dois Imaos'),
+	(7, 'Rogerio', 7, 'Aquidauana'),
+	(8, 'Gabriel', 8, 'Aquidauana'),
+	(9, 'Lais', 9, 'Aquidauana'),
+	(10, 'Ygo', 10, 'Anastacio');
+	
+INSERT INTO veiculos VALUES
+	(1, 'Uno', 'A2K4567', 100.00),
+	(2, 'Uno', 'B1L4567', 100.00),
+	(3, 'Renegade', 'C1M4567', 333.33),
+	(4, 'Marea', 'D1N3567', 111.11),
+	(5, 'Corsa', 'E1O3467', 113.00),
+	(6, 'Fusca', 'F1P3457', 50.00),
+	(7, 'Sedan', 'G1Q3456', 120.00),
+	(8, 'Monza', 'H1R3456', 133.00),
+	(9, 'Picape', 'I1S3456', 150.00),
+	(10, 'Tesla', 'J0T2345', 1000000.00);
+
+--Parei aqui
+INSERT INTO locacoes VALUES
+	(1, 1, 1, '2026-10-20', '2026-10-25'),
+	(2, 2, 2, '2026-10-20', '2026-10-25'),
+	(3, 3, 3, '2026-11-01', '2026-11-06'),
+	(4, 4, 4, '2026-11-01', '2026-11-06'),
+	(5, 5, 5, '2026-11-01', '2026-11-06'),
+	(6, 6, 6, '2026-12-23', '2026-12-29'),
+	(7, 7, 7, '2026-12-23', '2026-12-29'),
+	(8, 8, 8, '2026-12-23', '2026-12-29'),
+	(9, 9, 9, 150.00),
+	(10, 10, 10, 1000000.00),
+	(11, 10, 10 1000000.00),
+	(12, 10, 10, 1000000.00);
