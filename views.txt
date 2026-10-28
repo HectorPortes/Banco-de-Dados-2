@@ -1,0 +1,114 @@
+-- Alunos
+CREATE TABLE aluno (
+    id_aluno     SERIAL PRIMARY KEY,
+    nome_aluno   VARCHAR(250) NOT NULL,
+    mae          VARCHAR(250),
+    pai          VARCHAR(250),
+    data_nascimento DATE,
+    descricao    TEXT
+);
+
+-- Cursos
+CREATE TABLE curso (
+    id_curso    SERIAL PRIMARY KEY,
+    nome_curso  VARCHAR(250) NOT NULL
+);
+
+-- Turmas
+CREATE TABLE turma (
+    id_turma    SERIAL PRIMARY KEY,
+    nome_turma  VARCHAR(250) NOT NULL,
+    data_inicio DATE,
+    data_fim    DATE,
+    id_curso    INT REFERENCES curso(id_curso)
+);
+
+-- Matrículas (relaciona aluno + turma)
+CREATE TABLE matricula (
+    id_matricula SERIAL PRIMARY KEY,
+    id_aluno     INT REFERENCES aluno(id_aluno),
+    id_turma     INT REFERENCES turma(id_turma),
+    nota_final   NUMERIC(4,2),
+    data_matricula DATE DEFAULT CURRENT_DATE
+);
+
+
+INSERT INTO aluno (nome_aluno, mae, pai, data_nascimento, descricao) VALUES
+('DIEGO',      'ELIANA',    'JOSE',       '1987-11-30', 'Trabalha no IFMS'),
+('JOAO',       'ANA',       'JOAQUIM',    '1967-11-30', 'Trabalha no IFMS'),
+('PEDRO',      'JESSICA',   'MOISES',     '1958-11-10', 'Trabalha no IFMS'),
+('MARIA',      'JOAQUINA',  'JOAO',       '1951-11-10', 'Trabalha no IFMS'),
+('MARILIA',    'JOSEFINA',  'PEDRO',      '1957-11-10', 'Trabalha no IFMS'),
+('GABRIEL',    'RENATA',    'PAULO',      '1910-11-10', 'Trabalha no IFMS'),
+('CLAUDEMIR',  'ANA',       'LUIZ',       '1910-11-10', 'Trabalha no IFMS'),
+('RODRIGO',    'JOSEFINA',  'CLAUDEMIR',  '1950-11-10', 'Trabalha no IFMS'),
+('ANGELICA',   'MARCIA',    'MARIA',      '1957-01-10', 'Trabalha no IFMS'),
+('LUCAS',      'JOSEFINA',  'JESUS',      '1957-11-10', 'Trabalha no IFMS'),
+('ANA',   'JOSEFINA',  'DELMIR',     '1995-08-10', 'Trabalha no IFMS'),
+('JOAQUIM',   'CASSIMA',   'RONIVAN',    '1991-11-10', 'Trabalha no IFMS'),
+('CRISTIANA',  'BEATRIZ',   'VITOR',      '1981-01-10', 'Trabalha no IFMS');
+
+INSERT INTO curso (nome_curso) VALUES
+('Técnico em Informática'),
+('Técnico em Edificações'),
+('Sistemas para Internet'),
+('Redes de Computadores'),
+('Engenharia Civil');
+
+INSERT INTO turma (nome_turma, data_inicio, data_fim, id_curso) VALUES
+('Turma 30715',             '2020-01-01', '2023-12-31', 3),
+('Turma 30713',             '2020-01-01', '2023-12-31', 3),
+('2º Edificações',          '2020-01-01', '2023-12-31', 2),
+('6º Informática - A',      '2020-01-01', '2023-12-31', 1),
+('6º Informática - B',      '2020-01-01', '2023-12-31', 1),
+('6º Informática - C',      '2020-01-01', '2023-12-31', 1),
+('Eng. Civil',              '2020-01-01', '2023-12-31', 5);
+
+INSERT INTO matricula (id_aluno, id_turma, nota_final) VALUES
+(1, 4, 8.5),
+(2, 4, 7.0),
+(3, 4, 9.2),
+(4, 3, 6.5),
+(5, 3, 8.8),
+(6, 1, 7.5),
+(7, 1, 9.0),
+(8, 2, 8.0),
+(9, 5, 5.5),
+(10, 6, 9.8),
+(11, 7, 7.2);
+
+SELECT * FROM aluno
+
+SELECT * FROM curso
+
+SELECT * FROM turma
+
+SELECT * FROM matricula
+
+-- viwes / visão
+-- guardar a query / consulta / codigos
+
+CREATE OR REPLACE VIEW vw_alunos AS
+	SELECT id_aluno, 
+		nome_aluno, 
+		data_nascimento 
+	FROM aluno
+	
+SELECT * FROM vw_alunos
+
+CREATE OR REPLACE VIEW vw_alunos_ifms AS
+	SELECT nome_aluno,
+		descricao
+	FROM aluno
+	WHERE descricao = 'Trabalha no IFMS'
+	
+SELECT * FROM vw_alunos_ifms
+
+-- renomear view
+ALTER VIEW vw_alunos RENAME TO vw_alunos_base
+
+SELECT * FROM vw_alunos
+SELECT * FROM vw_alunos_base
+
+-- deletar uma view
+DROP VIEW vw_alunos_base
