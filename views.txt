@@ -107,8 +107,33 @@ SELECT * FROM vw_alunos_ifms
 -- renomear view
 ALTER VIEW vw_alunos RENAME TO vw_alunos_base
 
-SELECT * FROM vw_alunos
 SELECT * FROM vw_alunos_base
 
 -- deletar uma view
 DROP VIEW vw_alunos_base
+
+-- view para alunos matriculados em algum curso
+CREATE OR REPLACE VIEW vw_alunos_matriculados AS
+	SELECT a.id_aluno,
+		a.nome_aluno,
+		t.nome_turma,
+		c.nome_curso,
+		m.nota_final,
+		m.data_matricula
+	From aluno a
+	JOIN matricula m ON m.id_aluno = a.id_aluno
+	JOIN turma t ON t.id_turma = m.id_turma
+	JOIN curso c ON c.id_curso = t.id_curso
+
+SELECT * FROM vw_alunos_matriculados
+
+-- view para buscar alunos aprovados
+CREATE OR REPLACE VIEW vw_alunos_aprovados AS
+	SELECT nome_aluno,
+		nome_curso,
+		nome_turma,
+		nota_final
+	FROM vw_alunos_matriculados
+	WHERE nota_final >= 7
+
+SELECT * FROM vw_alunos_aprovados ORDER BY nota_final DESC
