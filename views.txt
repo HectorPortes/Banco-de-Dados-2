@@ -137,3 +137,58 @@ CREATE OR REPLACE VIEW vw_alunos_aprovados AS
 	WHERE nota_final >= 7
 
 SELECT * FROM vw_alunos_aprovados ORDER BY nota_final DESC
+
+-- Case - Se
+-- When - Testa a condição
+-- Then - Retorna o valor
+-- Encerra com END
+
+-- CASE
+--	  WHEN CODICAO1 THEN RESULTADO1
+--	  WHEN CODICAO2 THEN RESULTADO2
+--	  WHEN CODICAO3 THEN RESULTADO3
+--	  ELSE RESULTADO_PADRAO
+-- END
+
+SELECT
+	aluno.nome_aluno,
+	matricula.nota_final,
+	CASE
+		WHEN matricula.nota_final >= 7 THEN 'Aprovado'
+		WHEN matricula.nota_final < 7 THEN 'Recuperaçâo'
+		ELSE 'Reprovado'
+	END AS situacao
+FROM matricula
+JOIN aluno ON aluno.id_aluno = matricula.id_aluno
+
+
+SELECT
+	a.nome_aluno,
+	m.nota_final,
+	CASE
+		WHEN m.nota_final >= 9 THEN 'A'
+		WHEN m.nota_final >= 7 THEN 'B'
+		WHEN m.nota_final >= 5 THEN 'C'
+		ELSE 'D'
+	END AS conceito
+FROM matricula m
+JOIN aluno a ON a.id_aluno = m.id_aluno
+
+
+SELECT
+	a.nome_aluno,
+	c.nome_curso,
+	CASE c.id_curso
+		WHEN 1 THEN 'Informatica'
+		WHEN 2 THEN 'Edificaçôes'
+		WHEN 3 THEN 'TSI'
+		WHEN 4 THEN 'TRC'
+		WHEN 5 THEN 'Eng Civil'
+		ELSE 'Outro'
+	END AS area
+FROM matricula m
+JOIN aluno a ON a.id_aluno = m.id_aluno
+JOIN turma t ON t.id_turma = m.id_turma
+JOIN curso c ON c.id_curso = t.id_curso
+
+SELECT * FROM turma
